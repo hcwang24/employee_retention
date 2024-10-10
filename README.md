@@ -1,6 +1,6 @@
 # Employee Retention Dashboard
 
-<img src="demo/demo.png" width="1000" height="500"/>
+<img src="demo/demo.jpg" width="1000" height="500"/>
 
 ## Author
 **HanChen Wang**  
