@@ -50,6 +50,8 @@ app.layout = dbc.Container([
     html.H1("Employee Retention Dashboard", className="text-center"),
     html.P("Simulated data to explore employee turnover and satisfaction metrics.", className="mb-1 text-center"),
 
+# Statistics Bar
+    
     dbc.Row([
         # Left Column Wrapped in Card with Minimal Padding
         dbc.Col(
@@ -98,6 +100,12 @@ app.layout = dbc.Container([
         dbc.Col(
             dbc.Card([
                 dbc.CardBody([
+                    dbc.Row([
+                        dbc.Col(dbc.Card(dbc.CardBody(html.H4(id='total-employees', className='card-title'), style={'backgroundColor': 'rgba(255, 255, 255, 0.5)', 'padding': '0px'})), width=4),
+                        dbc.Col(dbc.Card(dbc.CardBody(html.H4(id='avg-satisfaction', className='card-title'), style={'backgroundColor': 'rgba(255, 255, 255, 0.5)', 'padding': '0px'})), width=4),
+                        dbc.Col(dbc.Card(dbc.CardBody(html.H4(id='total-turnover', className='card-title'), style={'backgroundColor': 'rgba(255, 255, 255, 0.5)', 'padding': '0px'})), width=4),
+                    ], className="mb-1 text-center"),
+                    
                     # Visualization Section
                     dbc.Row([
                         dbc.Col([
@@ -109,7 +117,7 @@ app.layout = dbc.Container([
                         dbc.Col([
                             dcc.Graph(id='average-work-hours', style={'padding': '0px', 'height': '100%'}),
                         ], width=4),
-                    ], style={'height': '42vh'}),  # First Row of Graphs
+                    ], style={'height': '40vh'}),  # First Row of Graphs
 
                     dbc.Row([
                         dbc.Col([
@@ -129,11 +137,11 @@ app.layout = dbc.Container([
                             html.Button("Export CSV", id="export-button", n_clicks=0),
                             dcc.Download(id="download-dataframe-csv"),
                         ], width=4),
-                    ], style={'height': '42vh'}),  # Second Row of Graphs
+                    ], style={'height': '40vh'}),  # Second Row of Graphs
                 ], style={'padding': '0'}),
             ], style={'backgroundColor': 'rgba(255, 255, 255, 0.5)', 'padding': '0px'})  # White with 50% opacity and minimal padding
         , width=10)  # Right Column for Visualizations and Preview
-    ], className="mb-4"),
+    ], className="mb-1"),
 
     # Footer
     html.Footer("Developed by HanChen Wang, October 2024", style={'textAlign': 'center', 'padding': '10px'})
@@ -155,6 +163,9 @@ app.layout = dbc.Container([
         Output('age-group-distribution', 'figure'),
         Output('gender-distribution', 'figure'),
         Output('data-preview', 'data'),
+        Output('total-employees', 'children'),
+        Output('avg-satisfaction', 'children'),
+        Output('total-turnover', 'children'),
     ],
     [
         Input('department-filter', 'value'),
@@ -176,6 +187,11 @@ def update_dashboard(department_filter, reason_filter, gender_filter, age_group_
     # Filter by exit year if selected
     if exit_year_filter:
         filtered_data = filtered_data[filtered_data['End_Date'].dt.year.isin(exit_year_filter)]
+    
+    # Calculate statistics
+    total_employees = f"Total Employees: {len(filtered_data)}"
+    avg_satisfaction = f"Average Satisfaction Score: {filtered_data['Satisfaction_Score'].mean().round(2) if len(filtered_data) > 0 else 0}"
+    total_turnover = f"Total Turnover: {len(filtered_data[filtered_data['Reason_for_Leaving'] != 'Still Employed'])}"
 
     # Turnover Reasons by Department
     turnover_reasons = filtered_data[filtered_data['Reason_for_Leaving'].notna()]
@@ -228,7 +244,7 @@ def update_dashboard(department_filter, reason_filter, gender_filter, age_group_
     # Return filtered data for the table
     data_preview = filtered_data.to_dict('records')
 
-    return turnover_fig, satisfaction_fig, avg_work_hours_fig, age_group_fig, gender_fig, data_preview
+    return turnover_fig, satisfaction_fig, avg_work_hours_fig, age_group_fig, gender_fig, data_preview, total_employees, avg_satisfaction, total_turnover
 
 # Export button callback
 @app.callback(
