@@ -43,6 +43,8 @@ reason_color_map = {
 # Initialize Dash app with Bootstrap CSS
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.JOURNAL])
 
+server = app.server
+
 # Layout of the dashboard
 app.layout = dbc.Container([
     html.H1("Employee Retention Dashboard", className="text-center"),
