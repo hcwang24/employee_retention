@@ -1,9 +1,8 @@
 import dash
-from dash import dcc, html, dash_table, Input, Output
+from dash import dcc, html, dash_table, Input, Output, State
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
-from datetime import datetime
 
 # Load Data
 employee_data = pd.read_csv("data/employee.csv").drop_duplicates().reset_index(drop=True)
@@ -19,26 +18,26 @@ employee_data['Reason_for_Leaving'] = employee_data['Reason_for_Leaving'].fillna
 
 # Define colors for consistency
 gender_color_map = {
-    'Male': 'lightblue',
+    'Male': 'Skyblue',
     'Female': 'orangered',
     'Non-binary': 'yellow',
 }
 
 job_level_color_map = {
-    "L1": "Red",     # Red (Entry Level)
-    "L2": "Orange",  # Orange
-    "L3": "Yellow",  # Yellow
-    "L4": "Green",   # Green
-    "L5": "Blue",    # Blue (Senior Level)
+    "L1": "Red",
+    "L2": "Orange",
+    "L3": "Yellow",
+    "L4": "Green",
+    "L5": "Blue",
 }
-# Define specific colors for each reason for leaving
+
 reason_color_map = {
-    'Work-Life Balance': 'Orange',    # Orange
-    'Compensation': '#3498DB',        # Blue
-    'Career Growth': '#FFC300',       # Yellow
-    'Personal Reasons': '#E74C3C',    # Bright Red
-    'Retirement': '#8E44AD',          # Purple
-    'Still Employed': '#2ECC71',      # Green
+    'Work-Life Balance': 'Orange',
+    'Compensation': '#3498DB',
+    'Career Growth': '#FFC300',
+    'Personal Reasons': '#E74C3C',
+    'Retirement': '#8E44AD',
+    'Still Employed': '#2ECC71',
 }
 
 # Initialize Dash app with Bootstrap CSS
@@ -49,127 +48,111 @@ app.layout = dbc.Container([
     html.H1("Employee Retention Dashboard", className="text-center"),
     html.P("Simulated data to explore employee turnover and satisfaction metrics.", className="mb-1 text-center"),
 
-    # Filters
     dbc.Row([
-        dbc.Col([
-            html.Label("Filter by Department:"),
-            dcc.Dropdown(
-                id='department-filter',
-                options=[{'label': dept, 'value': dept} for dept in employee_data['Department'].unique()],
-                value=sorted(employee_data['Department'].unique().tolist()),  # Default to all departments
-                multi=True
-            )
-        ], width=6),
-        dbc.Col([
-            html.Label("Filter by Reason for Leaving:"),
-            dcc.Dropdown(
-                id='reason-filter',
-                options=[{'label': reason, 'value': reason} for reason in employee_data['Reason_for_Leaving'].dropna().unique()],
-                value=employee_data['Reason_for_Leaving'].dropna().unique().tolist(),  # Default to all reasons
-                multi=True
-            )
-        ], width=6),
-    ], className="mb-3"),
-
-    dbc.Row([
-        dbc.Col([
-            html.Label("Filter by Gender:"),
-            dcc.Dropdown(
-                id='gender-filter',
-                options=[{'label': gender, 'value': gender} for gender in employee_data['Gender'].unique()],
-                value=sorted(employee_data['Gender'].unique().tolist()),  # Default to all genders
-                multi=True
-            )
-        ], width=6),
-        dbc.Col([
-            html.Label("Filter by Age Group:"),
-            dcc.Dropdown(
-                id='age-group-filter',
-                options=[{'label': age, 'value': age} for age in employee_data['Age_Group'].unique()],
-                value=sorted(employee_data['Age_Group'].unique().tolist()),  # Default to all age groups
-                multi=True
-            )
-        ], width=6),
-    ], className="mb-3"),
-
-    # Filter by Exit Year
-    dbc.Row([
-        dbc.Col([
-            html.Label("Filter by Exit Year:"),
-            dcc.Dropdown(
-                id='exit-year-filter',
-                options=[{'label': year, 'value': year} for year in sorted(employee_data['End_Date'].dt.year.unique()) if pd.notnull(year)],
-                value=[],  # Default to no exit year
-                multi=True
-            )
-        ], width=6),
-    ], className="mb-3"),
-
-    # Cards for Statistics
-    dbc.Row([
-        dbc.Col([
+        # Left Column Wrapped in Card with Minimal Padding
+        dbc.Col(
             dbc.Card([
                 dbc.CardBody([
-                    html.H4(id='total-employees', className='stat-box'),
-                ])
-            ])
-        ], width=4),
-        dbc.Col([
+                    html.Label("Filter by Department:"),
+                    dcc.Dropdown(
+                        id='department-filter',
+                        options=[{'label': dept, 'value': dept} for dept in employee_data['Department'].unique()],
+                        value=sorted(employee_data['Department'].unique().tolist()),  # Default to all departments
+                        multi=True
+                    ),
+                    html.Label("Filter by Reason for Leaving:"),
+                    dcc.Dropdown(
+                        id='reason-filter',
+                        options=[{'label': reason, 'value': reason} for reason in employee_data['Reason_for_Leaving'].dropna().unique()],
+                        value=employee_data['Reason_for_Leaving'].dropna().unique().tolist(),  # Default to all reasons
+                        multi=True
+                    ),
+                    html.Label("Filter by Gender:"),
+                    dcc.Dropdown(
+                        id='gender-filter',
+                        options=[{'label': gender, 'value': gender} for gender in employee_data['Gender'].unique()],
+                        value=sorted(employee_data['Gender'].unique().tolist()),  # Default to all genders
+                        multi=True
+                    ),
+                    html.Label("Filter by Age Group:"),
+                    dcc.Dropdown(
+                        id='age-group-filter',
+                        options=[{'label': age, 'value': age} for age in employee_data['Age_Group'].unique()],
+                        value=sorted(employee_data['Age_Group'].unique().tolist()),  # Default to all age groups
+                        multi=True
+                    ),
+                    html.Label("Filter by Exit Year:"),
+                    dcc.Dropdown(
+                        id='exit-year-filter',
+                        options=[{'label': year, 'value': year} for year in sorted(employee_data['End_Date'].dt.year.unique()) if pd.notnull(year)],
+                        value=[],  # Default to no exit year
+                        multi=True
+                    ),
+                ], style={'padding': '0'}),
+            ], style={'backgroundColor': 'rgba(173, 216, 230, 0.5)', 'padding': '0px'})  # Light Blue with 50% opacity and minimal padding
+        , width=2),  # Left Column for Filters
+
+        # Right Column Wrapped in Card with Minimal Padding
+        dbc.Col(
             dbc.Card([
                 dbc.CardBody([
-                    html.H4(id='avg-satisfaction', className='stat-box'),
-                ])
-            ])
-        ], width=4),
-        dbc.Col([
-            dbc.Card([
-                dbc.CardBody([
-                    html.H4(id='avg-work-hours', className='stat-box'),
-                ])
-            ])
-        ], width=4),
+                    # Visualization Section
+                    dbc.Row([
+                        dbc.Col([
+                            dcc.Graph(id='turnover-reasons', style={'padding': '0px', 'height': '100%'}),
+                        ], width=4),
+                        dbc.Col([
+                            dcc.Graph(id='satisfaction-scores', style={'padding': '0px', 'height': '100%'}),
+                        ], width=4),
+                        dbc.Col([
+                            dcc.Graph(id='average-work-hours', style={'padding': '0px', 'height': '100%'}),
+                        ], width=4),
+                    ], style={'height': '50vh'}),  # First Row of Graphs
+
+                    dbc.Row([
+                        dbc.Col([
+                            dcc.Graph(id='age-group-distribution', style={'padding': '0px', 'height': '100%'}),
+                        ], width=4),
+                        dbc.Col([
+                            dcc.Graph(id='gender-distribution', style={'padding': '0px', 'height': '100%'}),
+                        ], width=4),
+                        dbc.Col([
+                            dash_table.DataTable(
+                                id='data-preview',
+                                columns=[{"name": i, "id": i} for i in employee_data.columns],
+                                data=[],
+                                page_size=8,
+                                style_table={'overflowX': 'auto'},
+                            ),
+                            html.Button("Export CSV", id="export-button", n_clicks=0),
+                            dcc.Download(id="download-dataframe-csv"),
+                        ], width=4),
+                    ], style={'height': '50vh'}),  # Second Row of Graphs
+                ], style={'padding': '0'}),
+            ], style={'backgroundColor': 'rgba(255, 255, 255, 0.5)', 'padding': '0px'})  # White with 50% opacity and minimal padding
+        , width=10)  # Right Column for Visualizations and Preview
     ], className="mb-4"),
-
-    # Visualization Section
-    dbc.Row([
-        dbc.Col([
-            dcc.Graph(id='turnover-reasons'),
-        ], width=6),
-        dbc.Col([
-            dcc.Graph(id='satisfaction-scores'),
-        ], width=6),
-    ]),
-    
-    dbc.Row([
-        dbc.Col([
-            dcc.Graph(id='average-work-hours'),
-        ], width=6),
-        dbc.Col([
-            dcc.Graph(id='age-group-distribution'),
-        ], width=6),
-    ]),
-
-    dbc.Row([
-        dbc.Col([
-            dcc.Graph(id='gender-distribution'),
-        ], width=12),
-    ]),
 
     # Footer
     html.Footer("Developed by HanChen Wang, October 2024", style={'textAlign': 'center', 'padding': '10px'})
-], fluid=True)
+], fluid=True, style={
+    'background-image': 'url("/assets/work.jpg")',  # Adjusted to reference assets folder
+    'background-size': 'cover',
+    'background-repeat': 'no-repeat',
+    'background-attachment': 'fixed',
+    'background-position': 'center',
+    'min-height': '100vh',
+})
 
 # Callbacks for statistics and visualizations
 @app.callback(
     [
-        Output('total-employees', 'children'),
-        Output('avg-satisfaction', 'children'),
-        Output('avg-work-hours', 'children'),
         Output('turnover-reasons', 'figure'),
         Output('satisfaction-scores', 'figure'),
         Output('average-work-hours', 'figure'),
         Output('age-group-distribution', 'figure'),
         Output('gender-distribution', 'figure'),
+        Output('data-preview', 'data'),
     ],
     [
         Input('department-filter', 'value'),
@@ -192,11 +175,6 @@ def update_dashboard(department_filter, reason_filter, gender_filter, age_group_
     if exit_year_filter:
         filtered_data = filtered_data[filtered_data['End_Date'].dt.year.isin(exit_year_filter)]
 
-    # Statistics
-    total_employees = f"Total Employees: {filtered_data['Employee_ID'].nunique()}"
-    avg_satisfaction = f"Average Satisfaction Score (0-10): {filtered_data['Satisfaction_Score'].mean():.2f}"
-    avg_work_hours = f"Average Work Weekly Hours: {filtered_data['Work_Hours'].mean():.2f} hours"
-
     # Turnover Reasons by Department
     turnover_reasons = filtered_data[filtered_data['Reason_for_Leaving'].notna()]
     turnover_fig = px.pie(turnover_reasons, 
@@ -206,6 +184,7 @@ def update_dashboard(department_filter, reason_filter, gender_filter, age_group_
                            hole=0.3,
                            color_discrete_map=reason_color_map)
     turnover_fig.update_traces(textinfo='percent+label')
+    turnover_fig.update_layout(title_font_size=18, showlegend=False, margin=dict(l=10, r=10, b=10))
 
     # Satisfaction Scores by Job Level
     satisfaction_fig = px.box(filtered_data.sort_values("Job_Level"), 
@@ -215,7 +194,7 @@ def update_dashboard(department_filter, reason_filter, gender_filter, age_group_
                                title='Satisfaction Scores by Job Level',
                                labels={'Job_Level': 'Job Level', 'Satisfaction_Score': 'Satisfaction Score'},
                                color_discrete_map=job_level_color_map)
-    satisfaction_fig.update_layout(boxmode='overlay', showlegend=False)
+    satisfaction_fig.update_layout(title_font_size=18, boxmode='overlay', showlegend=False, margin=dict(l=10, r=10, b=10))
 
     # Average Work Hours by Department
     avg_work_hours_fig = px.box(filtered_data.sort_values("Department"), 
@@ -224,7 +203,7 @@ def update_dashboard(department_filter, reason_filter, gender_filter, age_group_
                                  title='Weekly Work Hours by Department',
                                  labels={'Work_Hours': 'Weekly Work Hours'},
                                  color_discrete_sequence=['black'])
-    avg_work_hours_fig.update_layout(boxmode='overlay', showlegend=False)
+    avg_work_hours_fig.update_layout(title_font_size=18, boxmode='overlay', showlegend=False, margin=dict(l=10, r=10, b=10))
 
     # Age Group Distribution
     age_group_fig = px.histogram(filtered_data.sort_values("Age_Group"), 
@@ -233,18 +212,47 @@ def update_dashboard(department_filter, reason_filter, gender_filter, age_group_
                                   title='Age Group and Gender Distribution',
                                   labels={'Age_Group': 'Age Group'},
                                   color_discrete_map=gender_color_map)
-    age_group_fig.update_layout(barmode='group')
+    age_group_fig.update_layout(title_font_size=18, barmode='group', showlegend=False, margin=dict(l=10, r=10, b=10))
 
     # Gender Distribution
     gender_fig = px.histogram(filtered_data.sort_values("Department"), 
                                x='Department', 
-                               color='Gender', 
-                               title='Gender Distribution by Department',
+                               color='Gender',
+                               title='Gender Distribution',
                                labels={'Department': 'Department'},
                                color_discrete_map=gender_color_map)
-    gender_fig.update_layout(barmode='group')
+    gender_fig.update_layout(title_font_size=18, barmode='group', showlegend=False, margin=dict(l=10, r=10, b=10))
 
-    return total_employees, avg_satisfaction, avg_work_hours, turnover_fig, satisfaction_fig, avg_work_hours_fig, age_group_fig, gender_fig
+    # Return filtered data for the table
+    data_preview = filtered_data.to_dict('records')
+
+    return turnover_fig, satisfaction_fig, avg_work_hours_fig, age_group_fig, gender_fig, data_preview
+
+# Export button callback
+@app.callback(
+    Output("download-dataframe-csv", "data"),
+    Input("export-button", "n_clicks"),
+    State('department-filter', 'value'),
+    State('reason-filter', 'value'),
+    State('gender-filter', 'value'),
+    State('age-group-filter', 'value'),
+    State('exit-year-filter', 'value'),
+)
+def export_data(n_clicks, department_filter, reason_filter, gender_filter, age_group_filter, exit_year_filter):
+    if n_clicks > 0:
+        # Filter data based on selections
+        filtered_data = employee_data[
+            (employee_data['Department'].isin(department_filter)) &
+            (employee_data['Reason_for_Leaving'].isin(reason_filter)) &
+            (employee_data['Gender'].isin(gender_filter)) &
+            (employee_data['Age_Group'].isin(age_group_filter))
+        ]
+
+        # Filter by exit year if selected
+        if exit_year_filter:
+            filtered_data = filtered_data[filtered_data['End_Date'].dt.year.isin(exit_year_filter)]
+
+        return dcc.send_data_frame(filtered_data.to_csv, "filtered_employee_data.csv")
 
 # Run the app
 if __name__ == '__main__':
