@@ -109,7 +109,7 @@ app.layout = dbc.Container([
                         dbc.Col([
                             dcc.Graph(id='average-work-hours', style={'padding': '0px', 'height': '100%'}),
                         ], width=4),
-                    ], style={'height': '50vh'}),  # First Row of Graphs
+                    ], style={'height': '42vh'}),  # First Row of Graphs
 
                     dbc.Row([
                         dbc.Col([
@@ -129,7 +129,7 @@ app.layout = dbc.Container([
                             html.Button("Export CSV", id="export-button", n_clicks=0),
                             dcc.Download(id="download-dataframe-csv"),
                         ], width=4),
-                    ], style={'height': '50vh'}),  # Second Row of Graphs
+                    ], style={'height': '42vh'}),  # Second Row of Graphs
                 ], style={'padding': '0'}),
             ], style={'backgroundColor': 'rgba(255, 255, 255, 0.5)', 'padding': '0px'})  # White with 50% opacity and minimal padding
         , width=10)  # Right Column for Visualizations and Preview

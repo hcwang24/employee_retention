@@ -1,5 +1,7 @@
 # Employee Retention Dashboard
 
+<img src="demo/demo.png" width="1000" height="500"/>
+
 ## Author
 **HanChen Wang**  
 *October 2024*
@@ -37,17 +39,17 @@ The **Employee Retention Dashboard** includes the following features:
 - **Data Export**: Users can export the filtered dataset as a CSV file for further analysis.
 
 ## Deployment
-This dashboard is deployed on [Render.com](https://your-link-here), where you can access the application and interact with the simulated employee data.
+This dashboard is deployed on [Render.com](https://employee-retention-e6x1.onrender.com/), where you can access the application and interact with the simulated employee data.
 
 ### Access the Dashboard
-Click [here](https://your-link-here) to access the Employee Retention Dashboard.
+Click [here](https://employee-retention-e6x1.onrender.com/) to access the Employee Retention Dashboard.
 
 ## Installation
 To run this app locally, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/employee-retention-dashboard.git
+   git clone https://github.com/hcwang24/employee_retention.git
    ```
 
 2. Navigate to the project directory:
